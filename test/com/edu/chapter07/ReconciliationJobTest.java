@@ -9,8 +9,10 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.verification.Times;
 
 /**
  * @author gaparicio
@@ -72,6 +74,17 @@ public class ReconciliationJobTest {
 				thenReturn(txList);
 		
 		job.reconcile();
-		verify(membershipDAO).getStatusFor(anyString());
+		
+		ArgumentCaptor<String> argCaptor = 
+				ArgumentCaptor.forClass(String.class);
+				
+		verify( membershipDAO, new Times(txList.size()) ).getStatusFor(argCaptor.capture());
+		
+		List<String> passedValues = argCaptor.getAllValues();
+		
+		assertEquals(tx1.getDeveloperId(), passedValues.get(0));
+		assertEquals(tx2.getDeveloperId(), passedValues.get(1));
+		assertEquals(tx3.getDeveloperId(), passedValues.get(2));
+		
 	}
 }

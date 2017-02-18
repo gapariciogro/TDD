@@ -15,6 +15,13 @@ public class ReconciliationJobImpl implements ReconciliationJob {
 	@Override
 	public int reconcile() {
 		List<TransactionDto> unsettleTxs = financialTxDAO.retrieveUnsettledTransactions();
+
+		
+		for(TransactionDto txDto : unsettleTxs)  {
+			MembershipStatusDto membership = membershipDAO.getStatusFor(
+					txDto.getDeveloperId());
+		}
+		
 		return unsettleTxs.size();
 	}
 
